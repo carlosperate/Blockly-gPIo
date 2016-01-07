@@ -2,11 +2,14 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>Blockly Demo: JS Interpreter</title>
-  <script src="js/libs/acorn_interpreter.js"></script>
+  <title>Blockly gPIo</title>
   <script src="blockly/blockly_compressed.js"></script>
   <script src="blockly/blocks_compressed.js"></script>
   <script src="blockly/javascript_compressed.js"></script>
+  <script src="blockly/python_compressed.js"></script>
+  <script src="js/libs/acorn_interpreter.js"></script>
+  <script src="js/gpio_blocks.js"></script>
+  <script src="js/time_blocks.js"></script>
   <script src="blockly/msg/js/en.js"></script>
   <style>
     body {
@@ -19,21 +22,30 @@
     }
   </style>
 </head>
+
 <body>
-  <h1><a href="https://developers.google.com/blockly/">Blockly</a> &gt;
-    <a href="../index.html">Demos</a> &gt; JS Interpreter</h1>
-
-  <p>This is a simple demo of executing code with a sandboxed JavaScript interpreter.</p>
-
-  <p>&rarr; More info on <a href="https://developers.google.com/blockly/installation/js-interpreter">JS Interpreter</a>...</p>
-
+  <h1>Blockly gPIo</h1>
+  <p>Simple proof of concept for Blockly to generate Python gpio code and javascript to simulate gpios on browser.</p>
   <p>
-    <button onclick="parseCode()">Parse JavaScript</button>
-    <button onclick="stepCode()" id="stepButton" disabled="disabled">Step JavaScript</button>
+    <button onclick="Bgpio.parseCode()">Parse JavaScript</button>
+    <button onclick="Bgpio.stepCode()" id="stepButton" disabled="disabled">Step JavaScript</button>
+    <button onclick="Bgpio.simulate()">Simulate</button>
+    <button onclick="Bgpio.toggleView()">Show Python Code</button>
+    <button onclick="Bgpio.runPython()()">Run on Raspberry Pi</button>
   </p>
 
-  <div id="blocklyDiv" style="height: 480px; width: 600px;"></div>
+  <div id="blocklyDiv" style="height: 480px; width: 50%; float: left"></div>
+  <div id="pinsDiv" style="height: 480px; width: 49%; float: left; display: none">
+    Raspberry Pi pins go here
+  </div>
+  <div id="pythonCodeDiv" style="height: 480px; width: 49%; float: left">
+    <pre id="pythonCodePre" class="content">Python code goes here</pre>
+  </div>
+  <div id="pythonOpDiv" style="height: 480px; width: 49%; float: left; display: none">
+    Python console output goes here (not yet implemented)
+  </div>
 
+  <!-- Toolbox -->
   <xml id="toolbox" style="display: none">
     <category name="Logic">
       <block type="controls_if"></block>
@@ -69,132 +81,104 @@
     </category>
     <category name="Variables" custom="VARIABLE"></category>
     <category name="Functions" custom="PROCEDURE"></category>
+    <category name="gPIo">
+      <block type="led_set"></block>
+      <block type="pin_binary"></block>
+    </category>
+    <category name="time">
+      <block type="sleep_ms"></block>
+    </category>
   </xml>
 
+  <!-- Blocks to display on the workspace -->
   <xml id="startBlocks" style="display: none">
-    <block type="variables_set" inline="true" x="20" y="20">
-      <field name="VAR">n</field>
-      <value name="VALUE">
-        <block type="math_number">
-          <field name="NUM">1</field>
+    <block type="controls_whileUntil" x="23" y="34">
+      <field name="MODE">WHILE</field>
+      <value name="BOOL">
+        <block type="logic_boolean">
+          <field name="BOOL">TRUE</field>
         </block>
       </value>
-      <next>
-        <block type="controls_repeat_ext" inline="true">
-          <value name="TIMES">
-            <block type="math_number">
-              <field name="NUM">4</field>
+      <statement name="DO">
+        <block type="led_set">
+          <field name="PIN">1</field>
+          <value name="STATE">
+            <block type="pin_binary">
+              <field name="STATE">HIGH</field>
             </block>
           </value>
-          <statement name="DO">
-            <block type="variables_set" inline="true">
-              <field name="VAR">n</field>
-              <value name="VALUE">
-                <block type="math_arithmetic" inline="true">
-                  <field name="OP">MULTIPLY</field>
-                  <value name="A">
-                    <block type="variables_get">
-                      <field name="VAR">n</field>
-                    </block>
-                  </value>
-                  <value name="B">
-                    <block type="math_number">
-                      <field name="NUM">2</field>
-                    </block>
-                  </value>
-                </block>
-              </value>
-            </block>
-          </statement>
           <next>
-            <block type="text_print" inline="false">
-              <value name="TEXT">
-                <block type="variables_get">
-                  <field name="VAR">n</field>
+            <block type="sleep_ms">
+              <value name="SLEEP_TIME_MILI">
+                <block type="math_number">
+                  <field name="NUM">750</field>
                 </block>
               </value>
+              <next>
+                <block type="led_set">
+                  <field name="PIN">1</field>
+                  <value name="STATE">
+                    <block type="pin_binary">
+                      <field name="STATE">LOW</field>
+                    </block>
+                  </value>
+                  <next>
+                    <block type="sleep_ms">
+                      <value name="SLEEP_TIME_MILI">
+                        <block type="math_number">
+                          <field name="NUM">1250</field>
+                        </block>
+                      </value>
+                      <next>
+                        <block type="led_set">
+                          <field name="PIN">2</field>
+                          <value name="STATE">
+                            <block type="pin_binary">
+                              <field name="STATE">HIGH</field>
+                            </block>
+                          </value>
+                          <next>
+                            <block type="sleep_ms">
+                              <value name="SLEEP_TIME_MILI">
+                                <block type="math_number">
+                                  <field name="NUM">1000</field>
+                                </block>
+                              </value>
+                              <next>
+                                <block type="led_set">
+                                  <field name="PIN">2</field>
+                                  <value name="STATE">
+                                    <block type="pin_binary">
+                                      <field name="STATE">LOW</field>
+                                    </block>
+                                  </value>
+                                  <next>
+                                    <block type="sleep_ms">
+                                      <value name="SLEEP_TIME_MILI">
+                                        <block type="math_number">
+                                          <field name="NUM">500</field>
+                                        </block>
+                                      </value>
+                                    </block>
+                                  </next>
+                                </block>
+                              </next>
+                            </block>
+                          </next>
+                        </block>
+                      </next>
+                    </block>
+                  </next>
+                </block>
+              </next>
             </block>
           </next>
         </block>
-      </next>
+      </statement>
     </block>
-  </xml>
+  </xml>"
 
-  <script>
-    var workspace = Blockly.inject('blocklyDiv',
-        {media: '../../media/',
-         toolbox: document.getElementById('toolbox')});
-    Blockly.Xml.domToWorkspace(workspace,
-        document.getElementById('startBlocks'));
 
-    var myInterpreter = null;
-
-    function initApi(interpreter, scope) {
-      // Add an API function for the alert() block.
-      var wrapper = function(text) {
-        text = text ? text.toString() : '';
-        return interpreter.createPrimitive(alert(text));
-      };
-      interpreter.setProperty(scope, 'alert',
-          interpreter.createNativeFunction(wrapper));
-
-      // Add an API function for the prompt() block.
-      var wrapper = function(text) {
-        text = text ? text.toString() : '';
-        return interpreter.createPrimitive(prompt(text));
-      };
-      interpreter.setProperty(scope, 'prompt',
-          interpreter.createNativeFunction(wrapper));
-
-      // Add an API function for highlighting blocks.
-      var wrapper = function(id) {
-        id = id ? id.toString() : '';
-        return interpreter.createPrimitive(highlightBlock(id));
-      };
-      interpreter.setProperty(scope, 'highlightBlock',
-          interpreter.createNativeFunction(wrapper));
-    }
-
-    var highlightPause = false;
-
-    function highlightBlock(id) {
-      workspace.highlightBlock(id);
-      highlightPause = true;
-    }
-
-    function parseCode() {
-      // Generate JavaScript code and parse it.
-      Blockly.JavaScript.STATEMENT_PREFIX = 'highlightBlock(%1);\n';
-      Blockly.JavaScript.addReservedWords('highlightBlock');
-      var code = Blockly.JavaScript.workspaceToCode(workspace);
-      myInterpreter = new Interpreter(code, initApi);
-
-      alert('Ready to execute this code:\n\n' + code);
-      document.getElementById('stepButton').disabled = '';
-      highlightPause = false;
-      workspace.traceOn(true);
-      workspace.highlightBlock(null);
-    }
-
-    function stepCode() {
-      try {
-        var ok = myInterpreter.step();
-      } finally {
-        if (!ok) {
-          // Program complete, no more code to execute.
-          document.getElementById('stepButton').disabled = 'disabled';
-          return;
-        }
-      }
-      if (highlightPause) {
-        // A block has been highlighted.  Pause execution here.
-        highlightPause = false;
-      } else {
-        // Keep executing until a highlight statement is reached.
-        stepCode();
-      }
-    }
-  </script>
-
+  <script src="js/app_logic.js"></script>
 </body>
 </html>
