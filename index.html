@@ -27,25 +27,153 @@
   <h1>Blockly gPIo</h1>
   <p>Simple proof of concept for Blockly to generate Python gpio code and javascript to simulate gpios on browser.</p>
   <p>
-      <button onclick="Bgpio.changeMode()">Change mode</button> Mode: <span id="modeName">Simulation</span>
+    <button onclick="Bgpio.runMode.changeMode()">Change mode</button> Mode: <span id="modeName">Simulation</span>
   </p>
   <p>
     <button id="debugInitButton" onclick="Bgpio.runMode.debugInit()">Debug Code</button>
     <button id="debugStepButton" onclick="Bgpio.runMode.debugStep()" disabled="disabled">Debug Step</button>
-    <button id="showButton" onclick="Bgpio.runMode.showCode()">Show Code</button>
     <button id="runButton" onclick="Bgpio.runMode.run()">Run</button>
     <button id="stopButton" onclick="Bgpio.runMode.stop()" disabled="disabled">Stop</button>
   </p>
 
   <div id="blocklyDiv" style="height: 480px; width: 50%; float: left"></div>
-  <div id="pinsDiv" style="height: 480px; width: 49%; float: left; display: none">
-    Raspberry Pi pins go here
+  <div id="simulationContentDiv" style="height: 480px; width: 49%; float: left; display: block">
+    <div id="pinsDiv" style="height: 350px;">
+      <!-- Table extracted and modified from https://projects.drogon.net/raspberry-pi/wiringpi/pins/ -->
+      <table style="width: 450px;">
+        <tbody>
+          <tr>
+              <th style="text-align: center;">BCM</th>
+              <th style="text-align: center;">Name</th>
+              <th style="text-align: center;" colspan="2">Header</th>
+              <th style="text-align: center;">Name</th>
+              <th style="text-align: center;">BCM</th>
+          </tr>
+          <tr>
+              <td style="text-align: center;">-</td>
+              <td style="text-align: center;"><span style="color: #ff0000;">3.3v</span></td>
+              <th style="text-align: center;">1</th>
+              <th style="text-align: center;">2</th>
+              <td style="text-align: center;" align="center"><span style="color: #ff6600;">5v</span></td>
+              <td style="text-align: center;" align="center">-</td>
+          </tr>
+          <tr>
+              <td style="text-align: center;">R1:0/R2:2</td>
+              <td style="text-align: center;"><span style="color: #33cccc;">SDA</span></td>
+              <th style="text-align: center;">3</th>
+              <th style="text-align: center;">4</th>
+              <td style="text-align: center;"><span style="color: #ff6600;">5v</span></td>
+              <td style="text-align: center;">-</td>
+          </tr>
+          <tr>
+              <td style="text-align: center;">R1:1/R2:3</td>
+              <td style="text-align: center;"><span style="color: #33cccc;">SCL</span></td>
+              <th style="text-align: center;">5</th>
+              <th style="text-align: center;">6</th>
+              <td style="text-align: center;"><span style="color: #000000;">0v</span></td>
+              <td style="text-align: center;">-</td>
+          </tr>
+          <tr>
+              <td style="text-align: center;">4</td>
+              <td style="text-align: center;"><span style="color: #008000;">GPIO7</span></td>
+              <th style="text-align: center;">7</th>
+              <th style="text-align: center;">8</th>
+              <td style="text-align: center;"><span style="color: #ffff00;">TxD</span></td>
+              <td style="text-align: center;">14</td>
+          </tr>
+          <tr>
+              <td style="text-align: center;">-</td>
+              <td style="text-align: center;"><span style="color: #000000;">0v</span></td>
+              <th style="text-align: center;">9</th>
+              <th style="text-align: center;">10</th>
+              <td style="text-align: center;"><span style="color: #ffff00;">RxD</span></td>
+              <td style="text-align: center;">15</td>
+          </tr>
+          <tr>
+              <td style="text-align: center;">0</td>
+              <td style="text-align: center;"><span style="color: #008000;">GPIO0</span></td>
+              <th style="text-align: center;">11</th>
+              <th style="text-align: center;">12</th>
+              <td style="text-align: center;"><span style="color: #008000;">GPIO1</span></td>
+              <td style="text-align: center;">18</td>
+          </tr>
+          <tr>
+              <td style="text-align: center;">R1:21/R2:27</td>
+              <td style="text-align: center;"><span style="color: #008000;">GPIO2</span></td>
+              <th style="text-align: center;">13</th>
+              <th style="text-align: center;">14</th>
+              <td style="text-align: center;"><span style="color: #000000;">0v</span></td>
+              <td style="text-align: center;">-</td>
+          </tr>
+          <tr>
+              <td style="text-align: center;">22</td>
+              <td style="text-align: center;"><span style="color: #008000;">GPIO3</span></td>
+              <th style="text-align: center;">15</th>
+              <th style="text-align: center;">16</th>
+              <td style="text-align: center;"><span style="color: #008000;">GPIO4</span></td>
+              <td style="text-align: center;">23</td>
+          </tr>
+          <tr>
+              <td style="text-align: center;">-</td>
+              <td style="text-align: center;"><span style="color: #ff0000;">3.3v</span></td>
+              <th style="text-align: center;">17</th>
+              <th style="text-align: center;">18</th>
+              <td style="text-align: center;"><span style="color: #008000;">GPIO5</span></td>
+              <td style="text-align: center;">24</td>
+          </tr>
+          <tr>
+              <td style="text-align: center;">10</td>
+              <td style="text-align: center;"><span style="color: #800080;">MOSI</span></td>
+              <th style="text-align: center;">19</th>
+              <th style="text-align: center;">20</th>
+              <td style="text-align: center;"><span style="color: #000000;">0v</span></td>
+              <td style="text-align: center;">-</td>
+          </tr>
+          <tr>
+              <td style="text-align: center;">9</td>
+              <td style="text-align: center;"><span style="color: #800080;">MISO</span></td>
+              <th style="text-align: center;">21</th>
+              <th style="text-align: center;">22</th>
+              <td style="text-align: center;"><span style="color: #008000;">GPIO6</span></td>
+              <td style="text-align: center;">25</td>
+          </tr>
+          <tr>
+              <td style="text-align: center;">11</td>
+              <td style="text-align: center;"><span style="color: #800080;">SCLK</span></td>
+              <th style="text-align: center;">23</th>
+              <th style="text-align: center;">24</th>
+              <td style="text-align: center;"><span style="color: #800080;">CE0</span></td>
+              <td style="text-align: center;">8</td>
+          </tr>
+          <tr>
+              <td style="text-align: center;">-</td>
+              <td style="text-align: center;"><span style="color: #000000;">0v</span></td>
+              <th style="text-align: center;">25</th>
+              <th style="text-align: center;">26</th>
+              <td style="text-align: center;"><span style="color: #800080;">CE1</span></td>
+              <td style="text-align: center;">7</td>
+          </tr>
+          <tr>
+              <th style="text-align: center;">BCM</th>
+              <th style="text-align: center;">Name</th>
+              <th style="text-align: center;" colspan="2">Header</th>
+              <th style="text-align: center;">Name</th>
+              <th style="text-align: center;">BCM</th>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div id="jsConsoleDiv" style="height: 130px; overflow: auto;background-color: black; color: white">
+      <pre style="margin:0; padding:0;">Javascript simulated output console goes here.</pre>
+    </div>
   </div>
-  <div id="pythonCodeDiv" style="height: 480px; width: 49%; float: left">
-    <pre id="pythonCodePre" class="content">Python code goes here</pre>
-  </div>
-  <div id="pythonOpDiv" style="height: 480px; width: 49%; float: left; display: none">
-    Python console output goes here (not yet implemented)
+  <div id="executionContentDiv" style="height: 480px; width: 49%; float: left; display: none;">
+    <div id="pythonCodeDiv" style="height: 350px; overflow: auto;">
+      <pre id="pythonCodePre" style="margin: 0; padding: 0;">Python code goes here.</pre>
+    </div>
+    <div id="pythonConsoleDiv" style="height: 130px; overflow: auto; background-color: black; color: white">
+      <pre id="pythonConsolePre" style="margin:0; padding:0;">Python real console output goes here.</pre>
+    </div>
   </div>
 
   <!-- Toolbox -->

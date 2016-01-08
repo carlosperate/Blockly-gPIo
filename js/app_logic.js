@@ -18,6 +18,7 @@ Bgpio.init = function () {
   });
   Blockly.Xml.domToWorkspace(Bgpio.workspace,
       document.getElementById('startBlocks'));
+  Bgpio.workspace.addChangeListener(Bgpio.renderPythonCode);
 };
 
 window.addEventListener('load', function load(event) {
@@ -36,14 +37,21 @@ Bgpio.runMode = {
       },
   debugInit: Bgpio.JsInterpreter.debugInit,
   debugStep: Bgpio.JsInterpreter.debugStep,
-  showCode: function() { alert('Feature not yet implemented'); },
   run: Bgpio.JsInterpreter.run,
   stop: Bgpio.JsInterpreter.stop,
-};
-
-Bgpio.changeMode = function() {
-  var modeText = document.getElementById('modeName');
-  modeText.innerHTML = Bgpio.runMode.selectNextMode();
+  changeMode: function() {
+        var modeText = document.getElementById('modeName');
+        modeText.innerHTML = Bgpio.runMode.selectNextMode();
+        var simulationContent = document.getElementById('simulationContentDiv');
+        var executionContent = document.getElementById('executionContentDiv');
+        if (this.selected === 0) {
+          simulationContent.style.display = 'block';
+          executionContent.style.display = 'none';
+        } else {
+          simulationContent.style.display = 'none';
+          executionContent.style.display = 'block';
+        }
+      },
 };
 
 Bgpio.generateJavaScriptCode = function() {
@@ -58,4 +66,15 @@ Bgpio.generateXml = function() {
   var xmlDom = Blockly.Xml.workspaceToDom(Bgpio.workspace);
   var xmlText = Blockly.Xml.domToPrettyText(xmlDom);
   return xmlText;
+};
+
+Bgpio.renderPythonCode = function() {
+  // Only regenerate the code if a block is not being dragged
+  if (Blockly.dragMode_ != 0) {
+    return;
+  }
+
+  // Render Python Code with latest change highlight and syntax highlighting
+  var pythonCodePre = document.getElementById('pythonCodePre');
+  pythonCodePre.innerHTML = Bgpio.generatePythonCode();
 };
