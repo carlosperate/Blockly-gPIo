@@ -40,10 +40,12 @@ Blockly.JavaScript['sleep_ms'] = function(block) {
       block, 'SLEEP_TIME_MILI', Blockly.JavaScript.ORDER_ATOMIC) || '0';
 
   Blockly.JavaScript.definitions_['function_sleep'] =
-      'function sleep(ms) {\n' +
+      'var sleep = function(ms) {\n' +
       '  ms += new Date().getTime();\n' +
-      '  while (new Date() < ms) {}\n' +
-      '}';
+      '  while (new Date() < ms) {\n' +
+      '    if (Bgpio.JsInterpreter.stopProcess) return;\n' +
+      '  }\n' +
+      '};';
 
   var code = 'sleep(' + delayTime + ');\n';
   return code;

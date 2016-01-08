@@ -27,11 +27,14 @@
   <h1>Blockly gPIo</h1>
   <p>Simple proof of concept for Blockly to generate Python gpio code and javascript to simulate gpios on browser.</p>
   <p>
-    <button onclick="Bgpio.parseCode()">Parse JavaScript</button>
-    <button onclick="Bgpio.stepCode()" id="stepButton" disabled="disabled">Step JavaScript</button>
-    <button onclick="Bgpio.simulate()">Simulate</button>
-    <button onclick="Bgpio.toggleView()">Show Python Code</button>
-    <button onclick="Bgpio.runPython()()">Run on Raspberry Pi</button>
+      <button onclick="Bgpio.changeMode()">Change mode</button> Mode: <span id="modeName">Simulation</span>
+  </p>
+  <p>
+    <button id="debugInitButton" onclick="Bgpio.runMode.debugInit()">Debug Code</button>
+    <button id="debugStepButton" onclick="Bgpio.runMode.debugStep()" disabled="disabled">Debug Step</button>
+    <button id="showButton" onclick="Bgpio.runMode.showCode()">Show Code</button>
+    <button id="runButton" onclick="Bgpio.runMode.run()">Run</button>
+    <button id="stopButton" onclick="Bgpio.runMode.stop()" disabled="disabled">Stop</button>
   </p>
 
   <div id="blocklyDiv" style="height: 480px; width: 50%; float: left"></div>
@@ -92,93 +95,93 @@
 
   <!-- Blocks to display on the workspace -->
   <xml id="startBlocks" style="display: none">
-    <block type="controls_whileUntil" x="23" y="34">
-      <field name="MODE">WHILE</field>
-      <value name="BOOL">
-        <block type="logic_boolean">
-          <field name="BOOL">TRUE</field>
+    <block type="controls_repeat_ext" x="21" y="34">
+        <value name="TIMES">
+        <block type="math_number">
+            <field name="NUM">2</field>
         </block>
-      </value>
-      <statement name="DO">
+        </value>
+        <statement name="DO">
         <block type="led_set">
-          <field name="PIN">1</field>
-          <value name="STATE">
+            <field name="PIN">1</field>
+            <value name="STATE">
             <block type="pin_binary">
-              <field name="STATE">HIGH</field>
+                <field name="STATE">HIGH</field>
             </block>
-          </value>
-          <next>
+            </value>
+            <next>
             <block type="sleep_ms">
-              <value name="SLEEP_TIME_MILI">
+                <value name="SLEEP_TIME_MILI">
                 <block type="math_number">
-                  <field name="NUM">750</field>
+                    <field name="NUM">750</field>
                 </block>
-              </value>
-              <next>
+                </value>
+                <next>
                 <block type="led_set">
-                  <field name="PIN">1</field>
-                  <value name="STATE">
+                    <field name="PIN">1</field>
+                    <value name="STATE">
                     <block type="pin_binary">
-                      <field name="STATE">LOW</field>
+                        <field name="STATE">LOW</field>
                     </block>
-                  </value>
-                  <next>
+                    </value>
+                    <next>
                     <block type="sleep_ms">
-                      <value name="SLEEP_TIME_MILI">
+                        <value name="SLEEP_TIME_MILI">
                         <block type="math_number">
-                          <field name="NUM">1250</field>
+                            <field name="NUM">1250</field>
                         </block>
-                      </value>
-                      <next>
+                        </value>
+                        <next>
                         <block type="led_set">
-                          <field name="PIN">2</field>
-                          <value name="STATE">
+                            <field name="PIN">2</field>
+                            <value name="STATE">
                             <block type="pin_binary">
-                              <field name="STATE">HIGH</field>
+                                <field name="STATE">HIGH</field>
                             </block>
-                          </value>
-                          <next>
+                            </value>
+                            <next>
                             <block type="sleep_ms">
-                              <value name="SLEEP_TIME_MILI">
+                                <value name="SLEEP_TIME_MILI">
                                 <block type="math_number">
-                                  <field name="NUM">1000</field>
+                                    <field name="NUM">1000</field>
                                 </block>
-                              </value>
-                              <next>
+                                </value>
+                                <next>
                                 <block type="led_set">
-                                  <field name="PIN">2</field>
-                                  <value name="STATE">
+                                    <field name="PIN">2</field>
+                                    <value name="STATE">
                                     <block type="pin_binary">
-                                      <field name="STATE">LOW</field>
+                                        <field name="STATE">LOW</field>
                                     </block>
-                                  </value>
-                                  <next>
+                                    </value>
+                                    <next>
                                     <block type="sleep_ms">
-                                      <value name="SLEEP_TIME_MILI">
+                                        <value name="SLEEP_TIME_MILI">
                                         <block type="math_number">
-                                          <field name="NUM">500</field>
+                                            <field name="NUM">500</field>
                                         </block>
-                                      </value>
+                                        </value>
                                     </block>
-                                  </next>
+                                    </next>
                                 </block>
-                              </next>
+                                </next>
                             </block>
-                          </next>
+                            </next>
                         </block>
-                      </next>
+                        </next>
                     </block>
-                  </next>
+                    </next>
                 </block>
-              </next>
+                </next>
             </block>
-          </next>
+            </next>
         </block>
-      </statement>
+        </statement>
     </block>
-  </xml>"
+    </xml>
 
-
+  <script src="js/js_interpreter.js"></script>
+  <script src="js/python_interpreter.js"></script>
   <script src="js/app_logic.js"></script>
 </body>
 </html>

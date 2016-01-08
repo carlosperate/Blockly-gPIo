@@ -9,7 +9,7 @@
 var Bgpio = Bgpio || {};
 
 Bgpio.workspace = null;
-Bgpio.myInterpreter = null;
+Bgpio.DEBUG = true;
 
 Bgpio.init = function () {
   Bgpio.workspace = Blockly.inject('blocklyDiv', {
@@ -25,97 +25,25 @@ window.addEventListener('load', function load(event) {
   Bgpio.init();
 });
 
-Bgpio.initApi = function(interpreter, scope) {
-  // Add an API function for the alert() block.
-  var wrapper = function(text) {
-    text = text ? text.toString() : '';
-    return interpreter.createPrimitive(alert(text));
-  };
-  interpreter.setProperty(scope, 'alert',
-      interpreter.createNativeFunction(wrapper));
-
-  // Add an API function for the prompt() block.
-  var wrapper = function(text) {
-    text = text ? text.toString() : '';
-    return interpreter.createPrimitive(prompt(text));
-  };
-  interpreter.setProperty(scope, 'prompt',
-      interpreter.createNativeFunction(wrapper));
-
-  // Add an API function for highlighting blocks.
-  var wrapper = function(id) {
-    id = id ? id.toString() : '';
-    return interpreter.createPrimitive(highlightBlock(id));
-  };
-  interpreter.setProperty(scope, 'highlightBlock',
-      interpreter.createNativeFunction(wrapper));
-
-  // Add an API function for simulating pins
-  var wrapper = function(pin, value) {
-    pin = pin ? pin.toString() : '';
-    value = value ? value.toString() : '';
-    return interpreter.createPrimitive(highlightDiagramPin(pin, value));
-  };
-  interpreter.setProperty(scope, 'highlightDiagramPin',
-      interpreter.createNativeFunction(wrapper));
+Bgpio.runMode = {
+  selected: 0,
+  types: ['Simulation', 'Execution'],
+  getSelectedMode: function() { return this.types[this.selected]; },
+  selectNextMode:  function() {
+        this.selected++;
+        if (this.selected >= this.types.length) this.selected = 0;
+        return this.types[this.selected];
+      },
+  debugInit: Bgpio.JsInterpreter.debugInit,
+  debugStep: Bgpio.JsInterpreter.debugStep,
+  showCode: function() { alert('Feature not yet implemented'); },
+  run: Bgpio.JsInterpreter.run,
+  stop: Bgpio.JsInterpreter.stop,
 };
 
-Bgpio.highlightPause = false;
-
-function highlightBlock(id) {
-  Bgpio.workspace.highlightBlock(id);
-  Bgpio.highlightPause = true;
-}
-
-function highlightDiagramPin(pin, value) {
-  alert('(temp) pin->' + pin + ' set ' + value);
-}
-
-Bgpio.parseCode= function() {
-  // Generate JavaScript code and parse it.
-  Blockly.JavaScript.STATEMENT_PREFIX = 'highlightBlock(%1);\n';
-  Blockly.JavaScript.addReservedWords('highlightBlock');
-  Blockly.JavaScript.addReservedWords('highlightDiagramPin');
-  var code = Bgpio.generateJavaScriptCode();
-  Bgpio.myInterpreter = new Interpreter(code, Bgpio.initApi);
-
-  alert('Ready to execute this code:\n\n' + code);
-  document.getElementById('stepButton').disabled = '';
-  Bgpio.highlightPause = false;
-  Bgpio.workspace.traceOn(true);
-  Bgpio.workspace.highlightBlock(null);
-};
-
-Bgpio.stepCode = function() {
-  try {
-    var ok = Bgpio.myInterpreter.step();
-  } finally {
-    if (!ok) {
-      // Program complete, no more code to execute.
-      document.getElementById('stepButton').disabled = 'disabled';
-      return;
-    }
-  }
-  if (Bgpio.highlightPause) {
-    // A block has been highlighted.  Pause execution here.
-    Bgpio.highlightPause = false;
-  } else {
-    // Keep executing until a highlight statement is reached.
-    Bgpio.stepCode();
-  }
-};
-
-Bgpio.simulate = function() {
-  alert('not yet implemented');
-};
-
-Bgpio.runPython = function() {
-  alert('not yet implemented');
-};
-
-Bgpio.toggleView = function() {
-  // Still need to be written
-  alert(Bgpio.generatePythonCode());
+Bgpio.changeMode = function() {
+  var modeText = document.getElementById('modeName');
+  modeText.innerHTML = Bgpio.runMode.selectNextMode();
 };
 
 Bgpio.generateJavaScriptCode = function() {
