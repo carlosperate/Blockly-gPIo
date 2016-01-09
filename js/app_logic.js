@@ -73,8 +73,8 @@ Bgpio.renderPythonCode = function() {
   if (Blockly.dragMode_ != 0) {
     return;
   }
-
   // Render Python Code with latest change highlight and syntax highlighting
-  var pythonCodePre = document.getElementById('pythonCodePre');
-  pythonCodePre.innerHTML = Bgpio.generatePythonCode();
+  var pyPre = document.getElementById('pythonCodePre');
+  pyPre.textContent = Bgpio.generatePythonCode();
+  pyPre.innerHTML = prettyPrintOne(pyPre.innerHTML, 'py', false);
 };
