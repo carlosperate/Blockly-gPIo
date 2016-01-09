@@ -1,0 +1,81 @@
+body {
+  background-color: #fff;
+  font-family: sans-serif;
+}
+h1 {
+  font-weight: normal;
+  font-size: 140%;
+  font-weight: 600;
+}
+pre {
+  margin: 0;
+  padding: 8px;
+}
+
+/* Content */
+.content {
+  height: 480px;
+  padding: 0;
+  margin: 0;
+}
+
+.leftContent {
+  width: 49%;
+  float: left;
+}
+
+.rightContent {
+  width: 49%;
+  float: left;
+  display: block;
+  margin-left: 1%;
+  border-style: solid;
+  border-color: #E2E2E2;
+  border-width: 1px;
+}
+.rightContentTop {
+  height: 350px;
+  overflow: auto;
+}
+.rightContentBottom {
+  height: 130px;
+  overflow: auto;
+  background-color: #6D6C6C;
+  color: #F1F1F1;
+}
+
+#executionContentDiv {
+  display: none;
+}
+
+/* GPIO table */
+#pinoutTable {
+  margin-top: 8px;
+  margin-left: 8px;
+}
+#pinoutTable td, th {
+  padding: 0px 8px 0px 8px;
+  text-align: center;
+}
+#pinoutTable th {
+  border: 1px solid black;
+}
+#pinoutTable .noborder {
+  border: none;
+}
+
+.pinVolt {
+  color: #ff6600;
+}
+.pinGround {
+  color: #000000;
+}
+.piI2c {
+  color: #33cccc;
+}
+.piGpio {
+  color: #008000;
+}
+.piSpi {
+  color: #800080;
+}

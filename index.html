@@ -11,16 +11,7 @@
   <script src="js/gpio_blocks.js"></script>
   <script src="js/time_blocks.js"></script>
   <script src="blockly/msg/js/en.js"></script>
-  <style>
-    body {
-      background-color: #fff;
-      font-family: sans-serif;
-    }
-    h1 {
-      font-weight: normal;
-      font-size: 140%;
-    }
-  </style>
+  <link rel="stylesheet" type="text/css" href="style.css">
 </head>
 
 <body>
@@ -36,143 +27,143 @@
     <button id="stopButton" onclick="Bgpio.runMode.stop()" disabled="disabled">Stop</button>
   </p>
 
-  <div id="blocklyDiv" style="height: 480px; width: 50%; float: left"></div>
-  <div id="simulationContentDiv" style="height: 480px; width: 49%; float: left; display: block">
-    <div id="pinsDiv" style="height: 350px;">
+  <div id="blocklyDiv" class="content leftContent"></div>
+  <div id="simulationContentDiv" class="content rightContent">
+    <div id="pinsDiv" class="rightContentTop">
       <!-- Table extracted and modified from https://projects.drogon.net/raspberry-pi/wiringpi/pins/ -->
-      <table style="width: 450px;">
+      <table id="pinoutTable">
         <tbody>
           <tr>
-              <th style="text-align: center;">BCM</th>
-              <th style="text-align: center;">Name</th>
-              <th style="text-align: center;" colspan="2">Header</th>
-              <th style="text-align: center;">Name</th>
-              <th style="text-align: center;">BCM</th>
+            <th class="noborder">BCM</th>
+            <th class="noborder">Name</th>
+            <th class="noborder" colspan="2">Header</th>
+            <th class="noborder">Name</th>
+            <th class="noborder">BCM</th>
           </tr>
           <tr>
-              <td style="text-align: center;">-</td>
-              <td style="text-align: center;"><span style="color: #ff0000;">3.3v</span></td>
-              <th style="text-align: center;">1</th>
-              <th style="text-align: center;">2</th>
-              <td style="text-align: center;" align="center"><span style="color: #ff6600;">5v</span></td>
-              <td style="text-align: center;" align="center">-</td>
+            <td>-</td>
+            <td><span style="color: #ff0000;">3.3v</span></td>
+            <th id="pin1">1</th>
+            <th id="pin2">2</th>
+            <td align="center"><span class="pinVolt">5v</span></td>
+            <td align="center">-</td>
           </tr>
           <tr>
-              <td style="text-align: center;">R1:0/R2:2</td>
-              <td style="text-align: center;"><span style="color: #33cccc;">SDA</span></td>
-              <th style="text-align: center;">3</th>
-              <th style="text-align: center;">4</th>
-              <td style="text-align: center;"><span style="color: #ff6600;">5v</span></td>
-              <td style="text-align: center;">-</td>
+            <td>R1:0/R2:2</td>
+            <td><span class="piI2c">SDA</span></td>
+            <th id="pin3">3</th>
+            <th id="pin4">4</th>
+            <td><span class="pinVolt">5v</span></td>
+            <td>-</td>
           </tr>
           <tr>
-              <td style="text-align: center;">R1:1/R2:3</td>
-              <td style="text-align: center;"><span style="color: #33cccc;">SCL</span></td>
-              <th style="text-align: center;">5</th>
-              <th style="text-align: center;">6</th>
-              <td style="text-align: center;"><span style="color: #000000;">0v</span></td>
-              <td style="text-align: center;">-</td>
+            <td>R1:1/R2:3</td>
+            <td><span class="piI2c">SCL</span></td>
+            <th id="pin5">5</th>
+            <th id="pin6">6</th>
+            <td><span class="pinGround">0v</span></td>
+            <td>-</td>
           </tr>
           <tr>
-              <td style="text-align: center;">4</td>
-              <td style="text-align: center;"><span style="color: #008000;">GPIO7</span></td>
-              <th style="text-align: center;">7</th>
-              <th style="text-align: center;">8</th>
-              <td style="text-align: center;"><span style="color: #ffff00;">TxD</span></td>
-              <td style="text-align: center;">14</td>
+            <td>4</td>
+            <td><span class="piGpio">GPIO7</span></td>
+            <th id="pin7">7</th>
+            <th id="pin8">8</th>
+            <td><span style="color: #ffff00;">TxD</span></td>
+            <td>14</td>
           </tr>
           <tr>
-              <td style="text-align: center;">-</td>
-              <td style="text-align: center;"><span style="color: #000000;">0v</span></td>
-              <th style="text-align: center;">9</th>
-              <th style="text-align: center;">10</th>
-              <td style="text-align: center;"><span style="color: #ffff00;">RxD</span></td>
-              <td style="text-align: center;">15</td>
+            <td>-</td>
+            <td><span class="pinGround">0v</span></td>
+            <th id="pin9">9</th>
+            <th id="pin10">10</th>
+            <td><span style="color: #ffff00;">RxD</span></td>
+            <td>15</td>
           </tr>
           <tr>
-              <td style="text-align: center;">0</td>
-              <td style="text-align: center;"><span style="color: #008000;">GPIO0</span></td>
-              <th style="text-align: center;">11</th>
-              <th style="text-align: center;">12</th>
-              <td style="text-align: center;"><span style="color: #008000;">GPIO1</span></td>
-              <td style="text-align: center;">18</td>
+            <td>0</td>
+            <td><span class="piGpio">GPIO0</span></td>
+            <th id="pin11">11</th>
+            <th id="pin12">12</th>
+            <td><span class="piGpio">GPIO1</span></td>
+            <td>18</td>
           </tr>
           <tr>
-              <td style="text-align: center;">R1:21/R2:27</td>
-              <td style="text-align: center;"><span style="color: #008000;">GPIO2</span></td>
-              <th style="text-align: center;">13</th>
-              <th style="text-align: center;">14</th>
-              <td style="text-align: center;"><span style="color: #000000;">0v</span></td>
-              <td style="text-align: center;">-</td>
+            <td>R1:21/R2:27</td>
+            <td><span class="piGpio">GPIO2</span></td>
+            <th id="pin13">13</th>
+            <th id="pin14">14</th>
+            <td><span class="pinGround">0v</span></td>
+            <td>-</td>
           </tr>
           <tr>
-              <td style="text-align: center;">22</td>
-              <td style="text-align: center;"><span style="color: #008000;">GPIO3</span></td>
-              <th style="text-align: center;">15</th>
-              <th style="text-align: center;">16</th>
-              <td style="text-align: center;"><span style="color: #008000;">GPIO4</span></td>
-              <td style="text-align: center;">23</td>
+            <td>22</td>
+            <td><span class="piGpio">GPIO3</span></td>
+            <th id="pin15">15</th>
+            <th id="pin16">16</th>
+            <td><span class="piGpio">GPIO4</span></td>
+            <td>23</td>
           </tr>
           <tr>
-              <td style="text-align: center;">-</td>
-              <td style="text-align: center;"><span style="color: #ff0000;">3.3v</span></td>
-              <th style="text-align: center;">17</th>
-              <th style="text-align: center;">18</th>
-              <td style="text-align: center;"><span style="color: #008000;">GPIO5</span></td>
-              <td style="text-align: center;">24</td>
+            <td>-</td>
+            <td><span style="color: #ff0000;">3.3v</span></td>
+            <th id="pin17">17</th>
+            <th id="pin18">18</th>
+            <td><span class="piGpio">GPIO5</span></td>
+            <td>24</td>
           </tr>
           <tr>
-              <td style="text-align: center;">10</td>
-              <td style="text-align: center;"><span style="color: #800080;">MOSI</span></td>
-              <th style="text-align: center;">19</th>
-              <th style="text-align: center;">20</th>
-              <td style="text-align: center;"><span style="color: #000000;">0v</span></td>
-              <td style="text-align: center;">-</td>
+            <td>10</td>
+            <td><span class="piSpi">MOSI</span></td>
+            <th id="pin19">19</th>
+            <th id="pin20">20</th>
+            <td><span class="pinGround">0v</span></td>
+            <td>-</td>
           </tr>
           <tr>
-              <td style="text-align: center;">9</td>
-              <td style="text-align: center;"><span style="color: #800080;">MISO</span></td>
-              <th style="text-align: center;">21</th>
-              <th style="text-align: center;">22</th>
-              <td style="text-align: center;"><span style="color: #008000;">GPIO6</span></td>
-              <td style="text-align: center;">25</td>
+            <td>9</td>
+            <td><span class="piSpi">MISO</span></td>
+            <th id="pin21">21</th>
+            <th id="pin22">22</th>
+            <td><span class="piGpio">GPIO6</span></td>
+            <td>25</td>
           </tr>
           <tr>
-              <td style="text-align: center;">11</td>
-              <td style="text-align: center;"><span style="color: #800080;">SCLK</span></td>
-              <th style="text-align: center;">23</th>
-              <th style="text-align: center;">24</th>
-              <td style="text-align: center;"><span style="color: #800080;">CE0</span></td>
-              <td style="text-align: center;">8</td>
+            <td>11</td>
+            <td><span class="piSpi">SCLK</span></td>
+            <th id="pin23">23</th>
+            <th id="pin24">24</th>
+            <td><span class="piSpi">CE0</span></td>
+            <td>8</td>
           </tr>
           <tr>
-              <td style="text-align: center;">-</td>
-              <td style="text-align: center;"><span style="color: #000000;">0v</span></td>
-              <th style="text-align: center;">25</th>
-              <th style="text-align: center;">26</th>
-              <td style="text-align: center;"><span style="color: #800080;">CE1</span></td>
-              <td style="text-align: center;">7</td>
+            <td>-</td>
+            <td><span class="pinGround">0v</span></td>
+            <th id="pin25">25</th>
+            <th id="pin26">26</th>
+            <td><span class="piSpi">CE1</span></td>
+            <td>7</td>
           </tr>
           <tr>
-              <th style="text-align: center;">BCM</th>
-              <th style="text-align: center;">Name</th>
-              <th style="text-align: center;" colspan="2">Header</th>
-              <th style="text-align: center;">Name</th>
-              <th style="text-align: center;">BCM</th>
+            <th class="noborder">BCM</th>
+            <th class="noborder">Name</th>
+            <th class="noborder" colspan="2">Header</th>
+            <th class="noborder">Name</th>
+            <th class="noborder">BCM</th>
           </tr>
         </tbody>
       </table>
     </div>
-    <div id="jsConsoleDiv" style="height: 130px; overflow: auto;background-color: black; color: white">
-      <pre style="margin:0; padding:0;">Javascript simulated output console goes here.</pre>
+    <div id="jsConsoleDiv" class="rightContentBottom">
+      <pre>Javascript simulated output console goes here.</pre>
     </div>
   </div>
-  <div id="executionContentDiv" style="height: 480px; width: 49%; float: left; display: none;">
-    <div id="pythonCodeDiv" style="height: 350px; overflow: auto;">
-      <pre id="pythonCodePre" style="margin: 0; padding: 0;">Python code goes here.</pre>
+  <div id="executionContentDiv" class="content rightContent">
+    <div id="pythonCodeDiv" class="rightContentTop">
+      <pre id="pythonCodePre">Python code goes here.</pre>
     </div>
-    <div id="pythonConsoleDiv" style="height: 130px; overflow: auto; background-color: black; color: white">
-      <pre id="pythonConsolePre" style="margin:0; padding:0;">Python real console output goes here.</pre>
+    <div id="pythonConsoleDiv" class="rightContentBottom">
+      <pre id="pythonConsolePre">Python real console output goes here.</pre>
     </div>
   </div>
 
@@ -306,7 +297,7 @@
         </block>
         </statement>
     </block>
-    </xml>
+  </xml>
 
   <script src="js/js_interpreter.js"></script>
   <script src="js/python_interpreter.js"></script>
