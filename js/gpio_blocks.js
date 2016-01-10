@@ -40,7 +40,8 @@ Blockly.JavaScript['led_set'] = function(block) {
   var pin = block.getFieldValue('PIN');
   var state = Blockly.JavaScript.valueToCode(
       block, 'STATE', Blockly.JavaScript.ORDER_ATOMIC) || '0';
-  var code = 'highlightDiagramPin(' + pin + ', "' + state + '");\n';
+  state = (state === 'HIGH') ? 'true' : 'false';
+  var code = 'setDiagramPin(' + pin + ', ' + state + ');\n';
   return code;
 };
 

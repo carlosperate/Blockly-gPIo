@@ -10,6 +10,7 @@ var Bgpio = Bgpio || {};
 
 Bgpio.workspace = null;
 Bgpio.DEBUG = true;
+Bgpio.PIN_COUNT = 26;
 
 Bgpio.init = function () {
   Bgpio.workspace = Blockly.inject('blocklyDiv', {
@@ -77,4 +78,15 @@ Bgpio.renderPythonCode = function() {
   var pyPre = document.getElementById('pythonCodePre');
   pyPre.textContent = Bgpio.generatePythonCode();
   pyPre.innerHTML = prettyPrintOne(pyPre.innerHTML, 'py', false);
+};
+
+Bgpio.setPinDefaults = function() {
+ for (var i = 1; i <= Bgpio.PIN_COUNT; i++) {
+   document.getElementById('pin' + i).className = 'pinDefault';
+ }
+};
+
+Bgpio.setPinDigital = function(pinNumber, isPinHigh) {
+  var pin = document.getElementById('pin' + pinNumber);
+  pin.className = isPinHigh ? 'pinDigitalHigh' : 'pinDigitalLow';
 };

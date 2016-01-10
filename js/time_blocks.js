@@ -38,16 +38,7 @@ Blockly.Blocks['sleep_ms'] = {
 Blockly.JavaScript['sleep_ms'] = function(block) {
   var delayTime = Blockly.JavaScript.valueToCode(
       block, 'SLEEP_TIME_MILI', Blockly.JavaScript.ORDER_ATOMIC) || '0';
-
-  Blockly.JavaScript.definitions_['function_sleep'] =
-      'var sleep = function(ms) {\n' +
-      '  ms += new Date().getTime();\n' +
-      '  while (new Date() < ms) {\n' +
-      '    if (Bgpio.JsInterpreter.stopProcess) return;\n' +
-      '  }\n' +
-      '};';
-
-  var code = 'sleep(' + delayTime + ');\n';
+  var code = 'delayMs(' + delayTime + ');\n';
   return code;
 };
 

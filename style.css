@@ -79,3 +79,17 @@ pre {
 .piSpi {
   color: #800080;
 }
+
+/* GPIO states */
+.pinDefault {
+  background-color: white;
+  color: black;
+}
+.pinDigitalHigh {
+  background-color: red;
+  color: black;
+}
+.pinDigitalLow {
+  background-color: black;
+  color: white;
+}
