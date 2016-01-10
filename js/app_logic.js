@@ -20,6 +20,8 @@ Bgpio.init = function () {
   Blockly.Xml.domToWorkspace(Bgpio.workspace,
       document.getElementById('startBlocks'));
   Bgpio.workspace.addChangeListener(Bgpio.renderPythonCode);
+
+  Bgpio.clearJsConsole();
 };
 
 window.addEventListener('load', function load(event) {
@@ -89,4 +91,14 @@ Bgpio.setPinDefaults = function() {
 Bgpio.setPinDigital = function(pinNumber, isPinHigh) {
   var pin = document.getElementById('pin' + pinNumber);
   pin.className = isPinHigh ? 'pinDigitalHigh' : 'pinDigitalLow';
+};
+
+Bgpio.appendTextJsConsole = function(text) {
+  var jsConsole = document.getElementById('jsConsolePre');
+  jsConsole.textContent += text + '\n';
+};
+
+Bgpio.clearJsConsole = function(text) {
+  var jsConsole = document.getElementById('jsConsolePre');
+  jsConsole.textContent = 'Simulated print output.\n';
 };

@@ -95,12 +95,14 @@ Bgpio.JsInterpreter.prepareNewRun = function() {
   Bgpio.workspace.traceOn(true);
   Bgpio.workspace.highlightBlock(null);
   Bgpio.setPinDefaults();
+  Bgpio.clearJsConsole();
 };
 
 Bgpio.JsInterpreter.prepareJavaScript = function() {
   Blockly.JavaScript.addReservedWords('highlightBlock');
   Blockly.JavaScript.addReservedWords('setDiagramPin');
   Blockly.JavaScript.addReservedWords('delayMs');
+  Blockly.JavaScript.addReservedWords('jsPrint');
 
   Blockly.JavaScript.INFINITE_LOOP_TRAP = null;
   if (Bgpio.JsInterpreter.stepping) {
@@ -141,6 +143,15 @@ Bgpio.JsInterpreter.debugInterpreterInit = function(interpreter, scope) {
   interpreter.setProperty(scope, 'highlightBlock',
       interpreter.createNativeFunction(wrapper));
 
+  // Add an API function for simulating pins
+  var wrapper = function(pin, value) {
+    pin = Bgpio.JsInterpreter.parseAcornObject(pin);
+    value = Bgpio.JsInterpreter.parseAcornObject(value);
+    return interpreter.createPrimitive(setDiagramPin(pin, value));
+  };
+  interpreter.setProperty(scope, 'setDiagramPin',
+      interpreter.createNativeFunction(wrapper));
+
   // Add an API function for waiting an amount of time
   var wrapper = function(ms) {
     ms = Bgpio.JsInterpreter.parseAcornObject(ms);
@@ -149,13 +160,12 @@ Bgpio.JsInterpreter.debugInterpreterInit = function(interpreter, scope) {
   interpreter.setProperty(scope, 'delayMs',
       interpreter.createNativeFunction(wrapper));
 
-  // Add an API function for simulating pins
-  var wrapper = function(pin, value) {
-    pin = Bgpio.JsInterpreter.parseAcornObject(pin);
-    value = Bgpio.JsInterpreter.parseAcornObject(value);
-    return interpreter.createPrimitive(setDiagramPin(pin, value));
+  // Add an API function for printing into the fake console
+  var wrapper = function(text) {
+    text = Bgpio.JsInterpreter.parseAcornObject(text);
+    return interpreter.createPrimitive(jsPrint(text));
   };
-  interpreter.setProperty(scope, 'setDiagramPin',
+  interpreter.setProperty(scope, 'jsPrint',
       interpreter.createNativeFunction(wrapper));
 };
 
@@ -178,4 +188,9 @@ function delayMs(ms) {
   if (Bgpio.JsInterpreter.stepping) return;
   var waitUntil = ms + new Date().getTime();
   while (new Date().getTime() < waitUntil) {;}
+}
+
+function jsPrint(text) {
+  if (Bgpio.DEBUG) console.log('Print in fake console: ' + text);
+  Bgpio.appendTextJsConsole(text);
 }
