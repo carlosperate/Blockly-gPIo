@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Blockly gPIo</title>
+  <script src="libs/acorn/acorn_interpreter.js"></script>
+  <script src="libs/prettify/prettify.js"></script>
+  <link rel="stylesheet" type="text/css" href="libs/prettify/prettify.css">
+  <script src="blockly/blockly_compressed.js"></script>
+  <script src="blockly/blocks_compressed.js"></script>
+  <script src="blockly/javascript_compressed.js"></script>
+  <script src="blockly/python_compressed.js"></script>
+  <script src="blocks/gpio.js"></script>
+  <script src="blocks/time.js"></script>
+  <script src="blocks/text.js"></script>
+  <script src="blockly/msg/js/en.js"></script>
+  <link rel="stylesheet" type="text/css" href="css/general.css">
+</head>
+
+<body>
+  <h1>Blockly gPIo</h1>
+  <p>Simple proof of concept for Blockly to generate Python gpio code and javascript to simulate gpios on browser.</p>
+  <p>
+    <button onclick="Bgpio.runMode.selectNextMode()">Change mode</button> Mode: <span id="modeName">Simulation</span>
+  </p>
+  <p>
+    <button id="debugInitButton" onclick="Bgpio.runMode.debugInit()">Debug Code</button>
+    <button id="debugStepButton" onclick="Bgpio.runMode.debugStep()" disabled="disabled">Debug Step</button>
+    <button id="runButton" onclick="Bgpio.runMode.run()">Run</button>
+    <button id="stopButton" onclick="Bgpio.runMode.stop()" disabled="disabled">Stop</button>
+  </p>
+
+  <div id="blocklyDiv" class="content leftContent"></div>
+  <div id="simulationContentDiv" class="content rightContent">
+    <div id="pinsDiv" class="rightContentTop">
+      <table id="pinoutTable">
+        <tbody>
+          <tr>
+            <th class="noborder">BCM</th>
+            <th class="noborder">Altern</th>
+            <th class="noborder" colspan="2">Header</th>
+            <th class="noborder">Altern</th>
+            <th class="noborder">BCM</th>
+          </tr>
+          <tr>
+            <td>-</td>
+            <td><span style="color: #ff0000;">3.3v</span></td>
+            <th id="pin1">1</th>
+            <th id="pin2">2</th>
+            <td align="center"><span class="pinVolt">5v</span></td>
+            <td align="center">-</td>
+          </tr>
+          <tr>
+            <td>2</td>
+            <td><span class="piI2c">SDA</span></td>
+            <th id="pin3">3</th>
+            <th id="pin4">4</th>
+            <td><span class="pinVolt">5v</span></td>
+            <td>-</td>
+          </tr>
+          <tr>
+            <td>3</td>
+            <td><span class="piI2c">SCL</span></td>
+            <th id="pin5">5</th>
+            <th id="pin6">6</th>
+            <td><span class="pinGround">0v</span></td>
+            <td>-</td>
+          </tr>
+          <tr>
+            <td>4</td>
+            <td><span class="piGpio">GPCLK0</span></td>
+            <th id="pin7">7</th>
+            <th id="pin8">8</th>
+            <td><span style="color: #ffff00;">TxD</span></td>
+            <td>14</td>
+          </tr>
+          <tr>
+            <td>-</td>
+            <td><span class="pinGround">0v</span></td>
+            <th id="pin9">9</th>
+            <th id="pin10">10</th>
+            <td><span style="color: #ffff00;">RxD</span></td>
+            <td>15</td>
+          </tr>
+          <tr>
+            <td>17</td>
+            <td><span class="piGpio">-</span></td>
+            <th id="pin11">11</th>
+            <th id="pin12">12</th>
+            <td><span class="piGpio">PWM0</span></td>
+            <td>18</td>
+          </tr>
+          <tr>
+            <td>27</td>
+            <td><span class="piGpio">-</span></td>
+            <th id="pin13">13</th>
+            <th id="pin14">14</th>
+            <td><span class="pinGround">0v</span></td>
+            <td>-</td>
+          </tr>
+          <tr>
+            <td>22</td>
+            <td><span class="piGpio">-</span></td>
+            <th id="pin15">15</th>
+            <th id="pin16">16</th>
+            <td><span class="piGpio">-</span></td>
+            <td>23</td>
+          </tr>
+          <tr>
+            <td>-</td>
+            <td><span style="color: #ff0000;">3.3v</span></td>
+            <th id="pin17">17</th>
+            <th id="pin18">18</th>
+            <td><span class="piGpio">-</span></td>
+            <td>24</td>
+          </tr>
+          <tr>
+            <td>10</td>
+            <td><span class="piSpi">MOSI</span></td>
+            <th id="pin19">19</th>
+            <th id="pin20">20</th>
+            <td><span class="pinGround">0v</span></td>
+            <td>-</td>
+          </tr>
+          <tr>
+            <td>9</td>
+            <td><span class="piSpi">MISO</span></td>
+            <th id="pin21">21</th>
+            <th id="pin22">22</th>
+            <td><span class="piGpio">-</span></td>
+            <td>25</td>
+          </tr>
+          <tr>
+            <td>11</td>
+            <td><span class="piSpi">SCLK</span></td>
+            <th id="pin23">23</th>
+            <th id="pin24">24</th>
+            <td><span class="piSpi">CE0</span></td>
+            <td>8</td>
+          </tr>
+          <tr>
+            <td>-</td>
+            <td><span class="pinGround">0v</span></td>
+            <th id="pin25">25</th>
+            <th id="pin26">26</th>
+            <td><span class="piSpi">CE1</span></td>
+            <td>7</td>
+          </tr>
+          <tr>
+            <th class="noborder">BCM</th>
+            <th class="noborder">Altern</th>
+            <th class="noborder" colspan="2">Header</th>
+            <th class="noborder">Altern</th>
+            <th class="noborder">BCM</th>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div id="jsConsoleDiv" class="rightContentBottom">
+      <pre id="jsConsolePre">Simulated print output.</pre>
+    </div>
+  </div>
+  <div id="executionContentDiv" class="content rightContent">
+    <div id="pythonCodeDiv" class="rightContentTop">
+      <pre id="pythonCodePre">Python code goes here.</pre>
+    </div>
+    <div id="pythonConsoleDiv" class="rightContentBottom">
+      <pre id="pythonConsolePre">Python real console output goes here.</pre>
+    </div>
+  </div>
+
+  <!-- Toolbox -->
+  <xml id="toolbox" style="display: none">
+    <category name="Logic">
+      <block type="controls_if"></block>
+      <block type="logic_compare"></block>
+      <block type="logic_operation"></block>
+      <block type="logic_negate"></block>
+      <block type="logic_boolean"></block>
+    </category>
+    <category name="Loops">
+      <block type="controls_repeat_ext">
+        <value name="TIMES">
+          <block type="math_number">
+            <field name="NUM">10</field>
+          </block>
+        </value>
+      </block>
+      <block type="controls_whileUntil"></block>
+    </category>
+    <category name="Math">
+      <block type="math_number"></block>
+      <block type="math_arithmetic"></block>
+      <block type="math_single"></block>
+    </category>
+    <category name="Text">
+      <block type="text"></block>
+      <block type="text_length"></block>
+      <block type="text_print"></block>
+      <block type="text_prompt_ext">
+        <value name="TEXT">
+          <block type="text"></block>
+        </value>
+      </block>
+    </category>
+    <category name="Variables" custom="VARIABLE"></category>
+    <category name="Functions" custom="PROCEDURE"></category>
+    <category name="gPIo">
+      <block type="led_set"></block>
+      <block type="pin_binary"></block>
+    </category>
+    <category name="time">
+      <block type="sleep_ms"></block>
+    </category>
+  </xml>
+
+  <!-- Blocks to display on the workspace -->
+  <xml id="startBlocks" style="display: none">
+    <block type="text_print" x="20" y="9">
+      <value name="TEXT">
+        <block type="text">
+          <field name="TEXT">GPIO toggling starting...</field>
+        </block>
+      </value>
+      <next>
+        <block type="controls_repeat_ext">
+          <value name="TIMES">
+            <block type="math_number">
+              <field name="NUM">2</field>
+            </block>
+          </value>
+          <statement name="DO">
+            <block type="led_set">
+              <field name="PIN">3</field>
+              <value name="STATE">
+                <block type="pin_binary">
+                  <field name="STATE">HIGH</field>
+                </block>
+              </value>
+              <next>
+                <block type="sleep_ms">
+                  <value name="SLEEP_TIME_MILI">
+                    <block type="math_number">
+                      <field name="NUM">750</field>
+                    </block>
+                  </value>
+                  <next>
+                    <block type="led_set">
+                      <field name="PIN">3</field>
+                      <value name="STATE">
+                        <block type="pin_binary">
+                          <field name="STATE">LOW</field>
+                        </block>
+                      </value>
+                      <next>
+                        <block type="sleep_ms">
+                          <value name="SLEEP_TIME_MILI">
+                            <block type="math_number">
+                              <field name="NUM">1250</field>
+                            </block>
+                          </value>
+                          <next>
+                            <block type="led_set">
+                              <field name="PIN">8</field>
+                              <value name="STATE">
+                                <block type="pin_binary">
+                                  <field name="STATE">HIGH</field>
+                                </block>
+                              </value>
+                              <next>
+                                <block type="sleep_ms">
+                                  <value name="SLEEP_TIME_MILI">
+                                    <block type="math_number">
+                                      <field name="NUM">1000</field>
+                                    </block>
+                                  </value>
+                                  <next>
+                                    <block type="led_set">
+                                      <field name="PIN">8</field>
+                                      <value name="STATE">
+                                        <block type="pin_binary">
+                                          <field name="STATE">LOW</field>
+                                        </block>
+                                      </value>
+                                      <next>
+                                        <block type="sleep_ms">
+                                          <value name="SLEEP_TIME_MILI">
+                                            <block type="math_number">
+                                              <field name="NUM">500</field>
+                                            </block>
+                                          </value>
+                                        </block>
+                                      </next>
+                                    </block>
+                                  </next>
+                                </block>
+                              </next>
+                            </block>
+                          </next>
+                        </block>
+                      </next>
+                    </block>
+                  </next>
+                </block>
+              </next>
+            </block>
+          </statement>
+          <next>
+            <block type="text_print">
+              <value name="TEXT">
+                <block type="text">
+                  <field name="TEXT">GPIO toggling done</field>
+                </block>
+              </value>
+            </block>
+          </next>
+        </block>
+      </next>
+    </block>
+  </xml>
+
+  <script src="js/js_interpreter.js"></script>
+  <script src="js/python_interpreter.js"></script>
+  <script src="js/websocket.js"></script>
+  <script src="js/app_logic.js"></script>
+</body>
+</html>
