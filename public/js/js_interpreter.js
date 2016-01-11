@@ -83,6 +83,7 @@ Bgpio.JsInterpreter.run = function() {
     }
   };
   recursiveStep();
+  //Bgpio.JsInterpreter.myInterpreter.run();
 };
 
 Bgpio.JsInterpreter.stop = function() {

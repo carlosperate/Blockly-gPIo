@@ -14,14 +14,14 @@
   <script src="blocks/time.js"></script>
   <script src="blocks/text.js"></script>
   <script src="blockly/msg/js/en.js"></script>
-  <link rel="stylesheet" type="text/css" href="style.css">
+  <link rel="stylesheet" type="text/css" href="css/general.css">
 </head>
 
 <body>
   <h1>Blockly gPIo</h1>
   <p>Simple proof of concept for Blockly to generate Python gpio code and javascript to simulate gpios on browser.</p>
   <p>
-    <button onclick="Bgpio.runMode.changeMode()">Change mode</button> Mode: <span id="modeName">Simulation</span>
+    <button onclick="Bgpio.runMode.selectNextMode()">Change mode</button> Mode: <span id="modeName">Simulation</span>
   </p>
   <p>
     <button id="debugInitButton" onclick="Bgpio.runMode.debugInit()">Debug Code</button>
@@ -321,6 +321,7 @@
 
   <script src="js/js_interpreter.js"></script>
   <script src="js/python_interpreter.js"></script>
+  <script src="js/websocket.js"></script>
   <script src="js/app_logic.js"></script>
 </body>
 </html>

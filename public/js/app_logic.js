@@ -22,6 +22,7 @@ Bgpio.init = function () {
   Bgpio.workspace.addChangeListener(Bgpio.renderPythonCode);
 
   Bgpio.clearJsConsole();
+  Bgpio.WebSocket.init();
 };
 
 window.addEventListener('load', function load(event) {
@@ -33,26 +34,35 @@ Bgpio.runMode = {
   selected: 0,
   types: ['Simulation', 'Execution'],
   getSelectedMode: function() { return this.types[this.selected]; },
+  selectMode: function(id) { this.selected = id;  this.updateState_(); },
   selectNextMode:  function() {
         this.selected++;
         if (this.selected >= this.types.length) this.selected = 0;
-        return this.types[this.selected];
+        this.updateState_();
       },
   debugInit: Bgpio.JsInterpreter.debugInit,
   debugStep: Bgpio.JsInterpreter.debugStep,
   run: Bgpio.JsInterpreter.run,
   stop: Bgpio.JsInterpreter.stop,
-  changeMode: function() {
+  updateState_: function() {
         var modeText = document.getElementById('modeName');
-        modeText.innerHTML = Bgpio.runMode.selectNextMode();
+        modeText.innerHTML = this.types[this.selected];
         var simulationContent = document.getElementById('simulationContentDiv');
         var executionContent = document.getElementById('executionContentDiv');
         if (this.selected === 0) {
           simulationContent.style.display = 'block';
           executionContent.style.display = 'none';
+          this.debugInit = Bgpio.JsInterpreter.debugInit;
+          this.debugStep = Bgpio.JsInterpreter.debugStep;
+          this.run = Bgpio.JsInterpreter.run;
+          this.stop = Bgpio.JsInterpreter.stop;
         } else {
           simulationContent.style.display = 'none';
           executionContent.style.display = 'block';
+          this.debugInit = Bgpio.PythonInterpreter.debugInit;
+          this.debugStep = Bgpio.PythonInterpreter.debugStep;
+          this.run = Bgpio.PythonInterpreter.run;
+          this.stop = Bgpio.PythonInterpreter.stop;
         }
       },
 };
