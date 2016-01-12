@@ -55,6 +55,14 @@ Blockly.JavaScript['led_set'] = function(block) {
  */
 Blockly.Python['led_set'] = function(block) {
   var pin = block.getFieldValue('PIN');
+  // Very hackish way to get the BMC pin number, need to create a proper look
+  // up dicionary with a function to generate the dropdown
+  for (var i = 0; i < PINS.length; i++) {
+    if (PINS[i][1] == pin) {
+      pin = PINS[i][0];
+      break;
+    }
+  }
   var state = Blockly.Python.valueToCode(
       block, 'STATE', Blockly.Python.ORDER_ATOMIC) || '0';
 

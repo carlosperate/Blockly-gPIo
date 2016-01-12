@@ -93,3 +93,8 @@ pre {
   background-color: black;
   color: white;
 }
+
+/* Other */
+#modeExecution {
+  display: none;
+}
