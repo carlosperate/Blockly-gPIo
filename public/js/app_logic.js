@@ -45,8 +45,14 @@ Bgpio.runMode = {
   run: Bgpio.JsInterpreter.run,
   stop: Bgpio.JsInterpreter.stop,
   updateState_: function() {
-        var modeText = document.getElementById('modeName');
-        modeText.innerHTML = this.types[this.selected];
+        for (var i = 0; i < this.types.length; i++) {
+          var modeText = document.getElementById('mode' + this.types[i]);
+          if (i === this.selected) {
+            modeText.style.display = 'inline';
+          } else {
+            modeText.style.display = 'none';
+          }
+        }
         var simulationContent = document.getElementById('simulationContentDiv');
         var executionContent = document.getElementById('executionContentDiv');
         if (this.selected === 0) {
@@ -67,7 +73,10 @@ Bgpio.runMode = {
       },
 };
 
-Bgpio.generateJavaScriptCode = function() {
+/*******************************************************************************
+ * Blockly related
+ ******************************************************************************/
+ Bgpio.generateJavaScriptCode = function() {
   return Blockly.JavaScript.workspaceToCode(Bgpio.workspace);
 };
 
@@ -92,6 +101,9 @@ Bgpio.renderPythonCode = function() {
   pyPre.innerHTML = prettyPrintOne(pyPre.innerHTML, 'py', false);
 };
 
+/*******************************************************************************
+ *  Right content related
+ ******************************************************************************/
 Bgpio.setPinDefaults = function() {
  for (var i = 1; i <= Bgpio.PIN_COUNT; i++) {
    document.getElementById('pin' + i).className = 'pinDefault';
@@ -111,4 +123,18 @@ Bgpio.appendTextJsConsole = function(text) {
 Bgpio.clearJsConsole = function(text) {
   var jsConsole = document.getElementById('jsConsolePre');
   jsConsole.textContent = 'Simulated print output.\n';
+};
+
+/*******************************************************************************
+ * Other
+ ******************************************************************************/
+Bgpio.getRaspPiIp = function() {
+  var ipField = document.getElementById('raspPiIp');
+  var ip = ipField.value;
+  if (/^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/.test(ip)) {
+    ipField.style.color = "green";
+    return ipField.value;
+  }
+  ipField.style.color = "red";
+  return null;
 };

@@ -22,6 +22,7 @@ Bgpio.PythonInterpreter.debugStep = function() {
 Bgpio.PythonInterpreter.run = function() {
   var code = document.getElementById('pythonCodePre').textContent;
   if (Bgpio.DEBUG) console.log('Run Python code: \n' + code);
+  Bgpio.WebSocket.connect(Bgpio.getRaspPiIp());
   Bgpio.WebSocket.sendCode(code);
 };
 

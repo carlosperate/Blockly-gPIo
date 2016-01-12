@@ -13,7 +13,7 @@ from server.SimpleWebSocketServer import WebSocket
 from server.SimpleWebSocketServer import SimpleWebSocketServer
 
 
-class SimpleEcho(WebSocket):
+class BlocklyGpioHandler(WebSocket):
     """ Description. """
 
     def handleMessage(self):
@@ -35,7 +35,7 @@ class SimpleEcho(WebSocket):
 
 def run_server():
     """ Description. """
-    server = SimpleWebSocketServer('', 8000, SimpleEcho)
+    server = SimpleWebSocketServer('', 8000, BlocklyGpioHandler)
     server.serveforever()
 
 

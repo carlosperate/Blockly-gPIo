@@ -16,8 +16,12 @@ Bgpio.WebSocket.init = function() {
   Bgpio.WebSocket.connect();
 };
 
-Bgpio.WebSocket.connect = function() {
-  Bgpio.WebSocket.ws = new WebSocket(Bgpio.WebSocket.URL);
+Bgpio.WebSocket.connect = function(ip) {
+  if (ip) {
+    Bgpio.WebSocket.ws = new WebSocket('ws://' + ip + ':8000/');
+  } else {
+    Bgpio.WebSocket.ws = new WebSocket(Bgpio.WebSocket.URL);
+  }
   Bgpio.WebSocket.ws.onopen = function(evt) { Bgpio.WebSocket.open(evt) };
   Bgpio.WebSocket.ws.onclose = function(evt) { Bgpio.WebSocket.close(evt) };
   Bgpio.WebSocket.ws.onmessage = function(evt) { Bgpio.WebSocket.receive(evt) };
