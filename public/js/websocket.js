@@ -56,6 +56,7 @@ Bgpio.WebSocket.error = function(evt) {
 };
 
 Bgpio.WebSocket.sendCode = function(codeStr) {
-  Bgpio.WebSocket.send(
-      JSON.stringify({'content': 'python_code', 'code': codeStr}));
+  var payload = JSON.stringify({'content': 'python_code', 'code': codeStr})
+  if (Bgpio.DEBUG) console.log('payload: ' + payload + '\n');
+  Bgpio.WebSocket.ws.onopen = () => Bgpio.WebSocket.send(payload);
 };
